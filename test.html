@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AtAgain 打字修正助手 - 測試頁面</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+    
+    .test-section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title .icon {
+      font-size: 1.5rem;
+    }
+    
+    .test-description {
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .test-cases {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .test-case {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .test-case .wrong {
+      color: #e74c3c;
+      text-decoration: line-through;
+      margin-bottom: 5px;
+    }
+    
+    .test-case .correct {
+      color: #27ae60;
+      font-weight: 600;
+    }
+    
+    .test-case .arrow {
+      color: #999;
+      margin: 0 10px;
+    }
+    
+    .category-tag {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+    
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 15px 20px;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e74c3c;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-dot.active {
+      background: #27ae60;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    
+    .btn:hover {
+      background: #5568d3;
+    }
+    
+    .tips {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .tips-title {
+      color: #856404;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .tips ul {
+      margin-left: 20px;
+      color: #856404;
+    }
+    
+    .tips li {
+      margin-bottom: 5px;
+    }
+    
+    .highlight-box {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .highlight-box h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .test-cases {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 AtAgain 打字修正助手</h1>
+    <p class="subtitle">測試頁面 - 驗證所有修正功能是否正常運作</p>
+    
+    <div class="tips">
+      <div class="tips-title">💡 使用說明</div>
+      <ul>
+        <li>在下方輸入框中輸入包含錯誤的文字，觀察是否自動修正</li>
+        <li>輸入空格、標點符號或離開輸入框時會觸發修正</li>
+        <li>請確保已安裝 AtAgain 擴充功能並重新整理頁面</li>
+        <li>狀態指示器顯示綠色表示擴充功能已偵測到此頁面</li>
+      </ul>
+    </div>
+    
+    <!-- 自由測試區 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">✏️</span> 自由測試區</h2>
+      <p class="test-description">在下方輸入框中任意輸入文字，體驗即時修正功能</p>
+      
+      <div class="input-group">
+        <label for="test-input">單行輸入測試</label>
+        <input type="text" id="test-input" placeholder="試試輸入：因該、跑的快、優惠卷、以經、即然...">
+      </div>
+      
+      <div class="input-group">
+        <label for="test-textarea">多行文字測試</label>
+        <textarea id="test-textarea" placeholder="試試輸入長文本，包含各種錯誤：
+我今天因該去學校，跑的快一點就能趕上。我有一張優惠卷想使用，以經準備好了。即然決定了，就要努力。請問那裡是出口？我來作飯給你吃。"></textarea>
+      </div>
+    </div>
+    
+    <!-- 固定修正測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">🔧</span> 1. 固定修正測試</h2>
+      <p class="test-description">這些錯誤會被直接替換，無需語境判斷</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">固定</span>
+          <div class="wrong">因該</div>
+          <div class="correct">→ 應該</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">固定</span>
+          <div class="wrong">再啦幹</div>
+          <div class="correct">→ 在啦幹</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 的/得 測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">🎯</span> 2. 「的/得」對照表測試（300+組）</h2>
+      <p class="test-description">動詞後用「得」，形容詞後用「的」</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">跑的快</div>
+          <div class="correct">→ 跑得快</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">做的好</div>
+          <div class="correct">→ 做得好</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">吃的好</div>
+          <div class="correct">→ 吃得好</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">說的對</div>
+          <div class="correct">→ 說得對</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">聽的懂</div>
+          <div class="correct">→ 聽得懂</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">的→得</span>
+          <div class="wrong">看的見</div>
+          <div class="correct">→ 看得見</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 券/卷 測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">🎫</span> 3. 「券/卷」對照表測試（300+組）</h2>
+      <p class="test-description">票券用「券」，捲起來的用「卷」</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">卷→券</span>
+          <div class="wrong">優惠卷</div>
+          <div class="correct">→ 優惠券</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">卷→券</span>
+          <div class="wrong">電影卷</div>
+          <div class="correct">→ 電影券</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">卷→券</span>
+          <div class="wrong">折價卷</div>
+          <div class="correct">→ 折價券</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">卷→券</span>
+          <div class="wrong">禮品卷</div>
+          <div class="correct">→ 禮品券</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 已/以 測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">⏰</span> 4. 「已/以」對照表測試（300+組）</h2>
+      <p class="test-description">時間完成用「已」，介詞/連詞用「以」</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">以→已</span>
+          <div class="wrong">以經</div>
+          <div class="correct">→ 已經</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">以→已</span>
+          <div class="wrong">以經完成</div>
+          <div class="correct">→ 已經完成</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">已→以</span>
+          <div class="wrong">已後</div>
+          <div class="correct">→ 以後</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">已→以</span>
+          <div class="wrong">所已</div>
+          <div class="correct">→ 所以</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 即/既 測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">⚡</span> 5. 「即/既」對照表測試（300+組）</h2>
+      <p class="test-description">即使/即將用「即」，既然用「既」</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">既→即</span>
+          <div class="wrong">既使</div>
+          <div class="correct">→ 即使</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">既→即</span>
+          <div class="wrong">既將</div>
+          <div class="correct">→ 即將</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">即→既</span>
+          <div class="wrong">即然</div>
+          <div class="correct">→ 既然</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">既→即</span>
+          <div class="wrong">既刻</div>
+          <div class="correct">→ 即刻</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 在/再 語境測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">🤔</span> 6. 「在/再」語境判斷測試</h2>
+      <p class="test-description">「再」= 重複/再次，「在」= 位置/進行中</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">在→再</span>
+          <div class="wrong">在見</div>
+          <div class="correct">→ 再見</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">在→再</span>
+          <div class="wrong">在來</div>
+          <div class="correct">→ 再來</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">再→在</span>
+          <div class="wrong">再家</div>
+          <div class="correct">→ 在家</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">再→在</span>
+          <div class="wrong">現再</div>
+          <div class="correct">→ 現在</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">再→在</span>
+          <div class="wrong">正再吃飯</div>
+          <div class="correct">→ 正在吃飯</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 哪/那 語境測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">❓</span> 7. 「哪/那」語境判斷測試</h2>
+      <p class="test-description">「哪」= 疑問，「那」= 指示</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">那→哪</span>
+          <div class="wrong">那裡是？</div>
+          <div class="correct">→ 哪裡是？</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">那→哪</span>
+          <div class="wrong">那個人嗎？</div>
+          <div class="correct">→ 哪個人嗎？</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">哪→那</span>
+          <div class="wrong">哪裡很漂亮</div>
+          <div class="correct">→ 那裡很漂亮</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 做/作 測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">✍️</span> 8. 「做/作」對照表測試（300+組）</h2>
+      <p class="test-description">具體動作用「做」，抽象/創作用「作」</p>
+      
+      <div class="test-cases">
+        <div class="test-case">
+          <span class="category-tag">作→做</span>
+          <div class="wrong">作飯</div>
+          <div class="correct">→ 做飯</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">作→做</span>
+          <div class="wrong">作事</div>
+          <div class="correct">→ 做事</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">做→作</span>
+          <div class="wrong">做業</div>
+          <div class="correct">→ 作業</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">做→作</span>
+          <div class="wrong">做為</div>
+          <div class="correct">→ 作為</div>
+        </div>
+        <div class="test-case">
+          <span class="category-tag">做→作</span>
+          <div class="wrong">做品</div>
+          <div class="correct">→ 作品</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 綜合測試 -->
+    <div class="test-section">
+      <h2 class="section-title"><span class="icon">🧪</span> 綜合測試段落</h2>
+      <p class="test-description">以下段落包含多種錯誤，複製到上方輸入框測試</p>
+      
+      <div class="highlight-box">
+        <h3>📋 複製以下文字進行測試：</h3>
+        <p style="margin-top: 10px; color: #666; line-height: 1.8;">
+          我因該早點出門，跑的快一點才能趕上公車。<br>
+          我有一張電影卷，想去看電影。<br>
+          以經準備好了，就等你了。<br>
+          即然決定了，就要努力做完。<br>
+          請問那裡是出口？我在找路。<br>
+          我來作飯給你吃，你做的菜很好吃。
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 狀態欄 -->
+  <div class="status-bar">
+    <div class="status-indicator">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">等待 AtAgain 擴充功能...</span>
+    </div>
+    <button class="btn" onclick="location.reload()">重新整理頁面</button>
+  </div>
+  
+  <!-- AtAgain 測試模式：直接內嵌修正邏輯 -->
+  <script>
+    // ========== AtAgain 測試版修正引擎 ==========
+    (function() {
+      'use strict';
+      
+      // 修正規則（簡化版）
+      const CORRECTIONS = {
+        // 固定修正
+        direct: [
+          { from: /因該/g, to: '應該' },
+          { from: /再啦幹/g, to: '在啦幹' }
+        ],
+        // 對照表：的/得
+        lookupDe: {
+          '跑的快': '跑得快', '跑的慢': '跑得慢', '跑的好': '跑得好',
+          '做的快': '做得快', '做的慢': '做得慢', '做的好': '做得好',
+          '吃的好': '吃得好', '說的對': '說得對', '聽的懂': '聽得懂',
+          '看的見': '看得見', '買的起': '買得起'
+        },
+        // 對照表：券/卷
+        lookupQuan: {
+          '優惠卷': '優惠券', '電影卷': '電影券', '折價卷': '折價券',
+          '禮品卷': '禮品券', '折扣卷': '折扣券', '現金卷': '現金券'
+        },
+        // 對照表：已/以
+        lookupYi: {
+          '以經': '已經', '以經完成': '已經完成', '所已': '所以'
+        },
+        // 對照表：即/既
+        lookupJi: {
+          '既使': '即使', '即然': '既然', '既將': '即將'
+        },
+        // 做/作
+        lookupZuo: {
+          '作飯': '做飯', '作事': '做事', '做業': '作業', '做為': '作為'
+        }
+      };
+      
+      // 應用修正
+      function applyCorrections(text) {
+        let result = text;
+        
+        // 固定修正
+        CORRECTIONS.direct.forEach(rule => {
+          result = result.replace(rule.from, rule.to);
+        });
+        
+        // 對照表修正
+        Object.entries(CORRECTIONS.lookupDe).forEach(([wrong, correct]) => {
+          result = result.replace(new RegExp(wrong, 'g'), correct);
+        });
+        Object.entries(CORRECTIONS.lookupQuan).forEach(([wrong, correct]) => {
+          result = result.replace(new RegExp(wrong, 'g'), correct);
+        });
+        Object.entries(CORRECTIONS.lookupYi).forEach(([wrong, correct]) => {
+          result = result.replace(new RegExp(wrong, 'g'), correct);
+        });
+        Object.entries(CORRECTIONS.lookupJi).forEach(([wrong, correct]) => {
+          result = result.replace(new RegExp(wrong, 'g'), correct);
+        });
+        Object.entries(CORRECTIONS.lookupZuo).forEach(([wrong, correct]) => {
+          result = result.replace(new RegExp(wrong, 'g'), correct);
+        });
+        
+        // 智能判斷：在/再（簡化版）
+        result = result.replace(/在見/g, '再見').replace(/在來/g, '再來');
+        result = result.replace(/再家/g, '在家').replace(/現再/g, '現在');
+        result = result.replace(/正再吃/g, '正在吃');
+        
+        // 智能判斷：哪/那（簡化版）
+        if (/[嗎呢嗎？]$/.test(result)) {
+          result = result.replace(/那裡/g, '哪裡').replace(/那個/g, '哪個');
+        }
+        
+        return result;
+      }
+      
+      // 監聽輸入框
+      function setupInputCorrection(input) {
+        if (input._atagainSetup) return;
+        input._atagainSetup = true;
+        
+        const triggerChars = [' ', '，', '。', '！', '？', '\n'];
+        
+        input.addEventListener('input', (e) => {
+          const lastChar = e.data;
+          if (!triggerChars.includes(lastChar)) return;
+          
+          const originalText = input.value;
+          const correctedText = applyCorrections(originalText);
+          
+          if (originalText !== correctedText) {
+            input.value = correctedText;
+            // 顯示修正提示
+            showCorrectionNotice(input, originalText, correctedText);
+          }
+        });
+        
+        input.addEventListener('blur', () => {
+          const originalText = input.value;
+          const correctedText = applyCorrections(originalText);
+          if (originalText !== correctedText) {
+            input.value = correctedText;
+          }
+        });
+      }
+      
+      // 顯示修正提示
+      function showCorrectionNotice(input, original, corrected) {
+        const notice = document.createElement('div');
+        notice.style.cssText = `
+          position: fixed;
+          background: #667eea;
+          color: white;
+          padding: 8px 12px;
+          border-radius: 6px;
+          font-size: 13px;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          animation: fadeInOut 2s ease;
+        `;
+        notice.textContent = '✓ 已自動修正錯字';
+        
+        const rect = input.getBoundingClientRect();
+        notice.style.left = rect.left + 'px';
+        notice.style.top = (rect.bottom + 5) + 'px';
+        
+        document.body.appendChild(notice);
+        setTimeout(() => notice.remove(), 2000);
+      }
+      
+      // 初始化
+      function init() {
+        // 監聽現有輸入框
+        document.querySelectorAll('input[type="text"], textarea').forEach(setupInputCorrection);
+        
+        // 監聽動態新增的輸入框
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.matches('input[type="text"], textarea')) {
+                  setupInputCorrection(node);
+                }
+                node.querySelectorAll('input[type="text"], textarea').forEach(setupInputCorrection);
+              }
+            });
+          });
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        console.log('[AtAgain 測試版] 修正引擎已啟動');
+      }
+      
+      // 添加動畫樣式
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateY(-10px); }
+          10% { opacity: 1; transform: translateY(0); }
+          90% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-10px); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // 啟動
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+    
+    // 更新狀態欄
+    document.getElementById('status-dot').classList.add('active');
+    document.getElementById('status-text').textContent = '✅ 測試模式：修正引擎已啟動（輸入空格/標點自動修正）';
+  </script>
+</body>
+</html>

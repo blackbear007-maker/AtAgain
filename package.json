@@ -1,0 +1,12 @@
+{
+  "name": "atagain",
+  "version": "1.0.0",
+  "description": "打字修正助手 Chrome 擴充功能",
+  "main": "content.js",
+  "scripts": {
+    "generate-icons": "node generate-icons.js"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}
