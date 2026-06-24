@@ -70,6 +70,36 @@
       flex: 1;
     }
 
+    .settings {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+
+    .settings h3 {
+      font-size: 13px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-item input[type="checkbox"] {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
     .examples {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
@@ -156,6 +186,18 @@
       <div class="feature-icon">✓</div>
       <div class="feature-text">「做/作、帶/戴、座/坐、訂/定」等 14 類對照修正</div>
     </div>
+  </div>
+
+  <div class="settings">
+    <h3>修正模式</h3>
+    <label class="setting-item">
+      <input type="checkbox" id="fixInput" checked>
+      <span>修正我輸入的</span>
+    </label>
+    <label class="setting-item">
+      <input type="checkbox" id="fixPage" checked>
+      <span>修正我看到的</span>
+    </label>
   </div>
 
   <div class="examples">

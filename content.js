@@ -1254,8 +1254,95 @@
       element._isProcessing = false;
     }
   }
+
+  // 對純文字套用所有修正（用於頁面內容）
+  function processPlainText(text) {
+    let result = applyDirectCorrections(text);
+    result = applyRegexDeCorrections(result.text);
+    result = applyLookupCorrections(result.text);
+    result = applyLookupQuanCorrections(result.text);
+    result = applyLookupYiCorrections(result.text);
+    result = applyLookupJiCorrections(result.text);
+    result = applyLookupZuoCorrections(result.text);
+    result = applyLookupTable(result.text, 'lookupDai');
+    result = applyLookupTable(result.text, 'lookupZuoZuo');
+    result = applyLookupTable(result.text, 'lookupLian');
+    result = applyLookupTable(result.text, 'lookupBian');
+    result = applyLookupTable(result.text, 'lookupDing');
+    result = applyLookupTable(result.text, 'lookupHou');
+    result = applyContextualCorrections(result.text, result.text);
+    return result.text;
+  }
+
+  // 修正頁面可見文字（不包含輸入框、腳本、樣式）
+  function processPageContent() {
+    if (document._atagainFixing) return;
+    document._atagainFixing = true;
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node) {
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName;
+        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT' || tag === 'IFRAME') {
+          return NodeFilter.FILTER_REJECT;
+        }
+        if (parent.isContentEditable) return NodeFilter.FILTER_REJECT;
+        if (parent.tagName === 'INPUT' || parent.tagName === 'TEXTAREA') return NodeFilter.FILTER_REJECT;
+        if (node._atagainProcessed) return NodeFilter.FILTER_REJECT;
+        if (!node.nodeValue || node.nodeValue.trim().length < 2) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      nodes.push(node);
+    }
+
+    for (const textNode of nodes) {
+      const original = textNode.nodeValue;
+      const corrected = processPlainText(original);
+      if (corrected !== original) {
+        textNode.nodeValue = corrected;
+        textNode._atagainProcessed = true;
+      }
+    }
+
+    document._atagainFixing = false;
+  }
+
+  // 監聽動態新增內容
+  function setupPageContentObserver() {
+    let timeout;
+    const observer = new MutationObserver(function(mutations) {
+      let hasNewText = false;
+      for (const mutation of mutations) {
+        if (mutation.type === 'childList') {
+          for (const added of mutation.addedNodes) {
+            if (added.nodeType === Node.TEXT_NODE) {
+              hasNewText = true;
+            } else if (added.nodeType === Node.ELEMENT_NODE) {
+              const tag = added.tagName;
+              if (tag !== 'SCRIPT' && tag !== 'STYLE' && tag !== 'NOSCRIPT') {
+                hasNewText = true;
+              }
+            }
+          }
+        }
+      }
+      if (hasNewText) {
+        clearTimeout(timeout);
+        timeout = setTimeout(processPageContent, 300);
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   // 監聽輸入事件
   function setupInputListeners() {
+
     // 監聽 input 和 textarea
     document.addEventListener('input', function(e) {
       const target = e.target;
@@ -1292,13 +1379,32 @@
   }
   // 初始化
   function init() {
-    setupInputListeners();
-    // 頁面載入完成後處理現有內容
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', processExistingContent);
-    } else {
-      processExistingContent();
-    }
+    chrome.storage.local.get(['fixInput', 'fixPage'], function(settings) {
+      const fixInput = settings.fixInput !== false; // 預設 true
+      const fixPage = settings.fixPage !== false;   // 預設 true
+
+      if (fixInput) {
+        setupInputListeners();
+        // 頁面載入完成後處理現有輸入框內容
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', processExistingContent);
+        } else {
+          processExistingContent();
+        }
+      }
+
+      if (fixPage) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            processPageContent();
+            setupPageContentObserver();
+          });
+        } else {
+          processPageContent();
+          setupPageContentObserver();
+        }
+      }
+    });
   }
   // 啟動
   init();
