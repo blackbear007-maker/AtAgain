@@ -1206,31 +1206,46 @@
     const text = getTextContent(element);
     if (!text) return;
     const fullContext = getFullSentence(element);
+    let anyChanged = false;
     // 先執行固定修正
     let result = applyDirectCorrections(text);
+    anyChanged = anyChanged || result.changed;
     // 執行正則批次修正（覆蓋高頻模式）
     result = applyRegexDeCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 再執行對照表修正（的/得）
     result = applyLookupCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 再執行對照表修正（券/卷）
     result = applyLookupQuanCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 再執行對照表修正（已/以）
     result = applyLookupYiCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 再執行對照表修正（即/既）
     result = applyLookupJiCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 再執行對照表修正（做/作）
     result = applyLookupZuoCorrections(result.text);
+    anyChanged = anyChanged || result.changed;
     // 新增類別修正
-    result = applyLookupTable(result.text, 'lookupDai');     // 帶/戴
-    result = applyLookupTable(result.text, 'lookupZuoZuo'); // 座/坐
-    result = applyLookupTable(result.text, 'lookupLian');   // 連/聯
-    result = applyLookupTable(result.text, 'lookupBian');   // 辨/辯/辦
-    result = applyLookupTable(result.text, 'lookupDing');   // 訂/定
-    result = applyLookupTable(result.text, 'lookupHou');    // 候/侯
+    result = applyLookupTable(result.text, 'lookupDai');
+    anyChanged = anyChanged || result.changed;     // 帶/戴
+    result = applyLookupTable(result.text, 'lookupZuoZuo');
+    anyChanged = anyChanged || result.changed; // 座/坐
+    result = applyLookupTable(result.text, 'lookupLian');
+    anyChanged = anyChanged || result.changed;   // 連/聯
+    result = applyLookupTable(result.text, 'lookupBian');
+    anyChanged = anyChanged || result.changed;   // 辨/辯/辦
+    result = applyLookupTable(result.text, 'lookupDing');
+    anyChanged = anyChanged || result.changed;   // 訂/定
+    result = applyLookupTable(result.text, 'lookupHou');
+    anyChanged = anyChanged || result.changed;    // 候/侯
     // 最後執行語境判斷修正（在/再、哪/那）
     // 用 result.text 作為 fullContext，確保兩者一致（前幾步修正可能已改變文字）
     result = applyContextualCorrections(result.text, result.text);
-    if (result.changed) {
+    anyChanged = anyChanged || result.changed;
+    if (anyChanged) {
       setTextContent(element, result.text);
       // 觸發 input 事件讓網頁知道內容已變更
       element._isProcessing = true;
