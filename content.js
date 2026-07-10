@@ -955,6 +955,28 @@
       '徵侯': '徵候', '症侯群': '症候群', '徵侯群': '徵候群'
     }
   };
+  // 判斷是否為敏感欄位（密碼、驗證碼、信用卡、Email 等），這類欄位一律不修正
+  const SENSITIVE_INPUT_TYPES = ['password', 'email', 'tel', 'number', 'url', 'search'];
+  function isSensitiveField(element) {
+    if (!element) return false;
+    if (element.tagName === 'INPUT') {
+      const type = (element.getAttribute('type') || 'text').toLowerCase();
+      if (SENSITIVE_INPUT_TYPES.includes(type)) return true;
+    }
+    const autocomplete = (element.getAttribute('autocomplete') || '').toLowerCase();
+    if (autocomplete.includes('password') ||
+        autocomplete.includes('one-time-code') ||
+        autocomplete.includes('cc-number') ||
+        autocomplete.includes('cc-csc')) {
+      return true;
+    }
+    // 常見以 name/id 標示密碼或驗證碼的欄位
+    const nameId = ((element.getAttribute('name') || '') + ' ' + (element.id || '')).toLowerCase();
+    if (/pass(word|wd)?|otp|verif|captcha|cvv|cvc|creditcard|cardnum/.test(nameId)) {
+      return true;
+    }
+    return false;
+  }
   // 取得元素的純文字內容
   function getTextContent(element) {
     if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
@@ -1203,6 +1225,8 @@
   }
   // 處理文字輸入
   function processText(element) {
+    // 敏感欄位（密碼、驗證碼、信用卡等）一律不讀取、不修正
+    if (isSensitiveField(element)) return;
     const text = getTextContent(element);
     if (!text) return;
     const fullContext = getFullSentence(element);

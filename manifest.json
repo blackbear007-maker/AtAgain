@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
   "name": "再啦讚！",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "「在等我一下」「再啦讚！」「因該沒問題吧？」「應啦讚！」用了這個擴充功能，再也不會看到讓你暴走的錯字",
   "permissions": ["storage"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
