@@ -9,3 +9,8 @@ package-lock.json
 tools/
 generate-icons.js
 icon-atagain.svg
+
+# Environment files
+.env
+.env.*
+!.env.example
